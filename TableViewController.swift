@@ -56,6 +56,42 @@ class TableViewController: UIViewController, UITableViewDelegate, UITableViewDat
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 70
     }
+    
+    @IBAction func exportButton(_ sender: Any) {
+        exportLogData()
+    }
+    
+    func exportLogData() {
+        let path = NSURL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("logs.csv")
+        var csvText = "Date,Note\n"
+        for grat in gratitudes {
+            let date:String = grat.datestamp!.toString(dateFormat: "MM/dd/YYY HH:mm")
+            let note:String = grat.note!
+            let newLine = "\(date),\(note)\n"
+            csvText.append(newLine)
+        }
+        do {
+            try csvText.write(to: path!, atomically: true, encoding: String.Encoding.utf8)
+            
+            let vc = UIActivityViewController(activityItems: [path], applicationActivities: [])
+            vc.excludedActivityTypes = [
+                UIActivityType.assignToContact,
+                UIActivityType.saveToCameraRoll,
+                UIActivityType.postToFlickr,
+                UIActivityType.postToVimeo,
+                UIActivityType.postToTencentWeibo,
+                UIActivityType.postToTwitter,
+                UIActivityType.postToFacebook,
+                UIActivityType.openInIBooks
+            ]
+            present(vc, animated: true, completion: nil)
+            
+        } catch {
+            
+            print("Failed to create file")
+            print("\(error)")
+        }
+    }
 
     @IBAction func backButton(_ sender: Any) {
         dismiss(animated: true, completion: nil)
