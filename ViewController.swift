@@ -14,6 +14,7 @@ class ViewController: UIViewController, UITextViewDelegate {
     @IBOutlet weak var grat2note: UITextView!
     @IBOutlet weak var grat3note: UITextView!
     @IBOutlet weak var labelYesterday: UILabel!
+    @IBOutlet weak var labelCurrentDate: UILabel!
     
     @IBOutlet weak var save: UIButton!
     @IBOutlet weak var viewAll: UIButton!
@@ -39,10 +40,18 @@ class ViewController: UIViewController, UITextViewDelegate {
         self.viewAll.cornerRadius = 10
         self.save.cornerRadius = 10
         self.saveyesterday.cornerRadius = 10
-        self.labelYesterday.cornerRadius = 10 
-        
+        self.labelYesterday.cornerRadius = 10
+        getCurrentDate()
     }
 
+    func getCurrentDate(){
+        let date = NSDate()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat  = "EEEE"//"EE" to get short style
+        let weekDay = dateFormatter.string(from: date as Date)
+        self.labelCurrentDate.text = weekDay + ", " + Date().toString(dateFormat: "MM/dd/YY")
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }

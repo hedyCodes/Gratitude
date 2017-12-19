@@ -43,7 +43,11 @@ class TableViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! gratCellTableViewCell
-        cell.dateLabel.text = gratitudes[indexPath.row].datestamp!.toString(dateFormat: "MM/dd/YY")
+        let datestamp:Date = gratitudes[indexPath.row].datestamp!
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat  = "EEEE"
+        let weekDay = dateFormatter.string(from: datestamp as Date)
+        cell.dateLabel.text = weekDay + ", " +  datestamp.toString(dateFormat: "MM/dd/YY")
         cell.noteLabel.text = gratitudes[indexPath.row].note!
         cell.gratId = Int16(gratitudes[indexPath.row].id!)
         return cell as UITableViewCell
