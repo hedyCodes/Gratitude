@@ -29,11 +29,14 @@ class TableViewController: UIViewController, UITableViewDelegate, UITableViewDat
         tableView.dataSource = self
         
         gratitudes = dataManager.getGratsByMonth(monthSelection: 0)
+        tableView.reloadData()
+
         self.back.cornerRadius = 10
         self.tableView.cornerRadius = 10
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        gratitudes = dataManager.getGratsByMonth(monthSelection: 0)
         tableView.reloadData()
     }
     

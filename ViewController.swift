@@ -12,6 +12,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
 
     @IBOutlet weak var labelYesterday: UILabel!
     @IBOutlet weak var labelCurrentDate: UILabel!
+    @IBOutlet weak var removeGratButton: UIButton!
     
     @IBOutlet weak var save: UIButton!
     @IBOutlet weak var viewAll: UIButton!
@@ -30,9 +31,22 @@ class ViewController: UIViewController, UITextFieldDelegate {
     let gratWidth:Int = 300
     var gratAreaHeight:CGFloat = 0
     
+    var textfieldTags:[Int] = []
+    
     @IBAction func addGrat(_ sender: Any) {
 
         createTextField()
+        removeGratButton.isHidden = false
+    }
+    
+    @IBAction func removeGrat(_ sender: Any) {
+        self.view.viewWithTag(textfieldTags.last!)?.removeFromSuperview()
+        textfieldTags.removeLast()
+        gratCount -= 1
+        if (textfieldTags.count == 0) {
+            removeGratButton.isHidden = true
+            gratCount = 0
+        }
     }
     
     func createTextField(){
@@ -40,6 +54,12 @@ class ViewController: UIViewController, UITextFieldDelegate {
         if (gratCount > 0 && (Int(gratAreaHeight) / (gratCount*gratHeight)) < 1) { return }
         //create text field
         let yPosition =  topMargin + ((gratHeight+2)*(gratCount))
+        let yPositionSaves = yPosition + gratHeight + 10
+        //move buttons down with new textfields
+        save.frame.origin = CGPoint(x: 270, y: yPositionSaves)
+        labelYesterday.frame.origin = CGPoint(x: 15, y: yPositionSaves)
+        saveyesterday.frame.origin = CGPoint(x: 15, y: yPositionSaves + 25)
+
         let newTextField = UITextField(frame: CGRect(x: 15, y: yPosition, width: gratWidth, height: gratHeight))
         newTextField.placeholder = ""
         newTextField.target(forAction: #selector(self.textChanged), withSender: UITextField.self)
@@ -51,6 +71,9 @@ class ViewController: UIViewController, UITextFieldDelegate {
         newTextField.clearButtonMode = UITextFieldViewMode.whileEditing;
         newTextField.contentVerticalAlignment = UIControlContentVerticalAlignment.center
         newTextField.cornerRadius = 10
+        let textTag:Int = Int(arc4random())
+        newTextField.tag = textTag
+        textfieldTags.append(textTag)
         newTextField.delegate = self
         self.view.addSubview(newTextField)
         gratCount += 1
@@ -89,6 +112,8 @@ class ViewController: UIViewController, UITextFieldDelegate {
         yestLabelHeight = labelYesterday.bounds.height
         gratAreaHeight = screenHeight - CGFloat(topMargin)
         createTextField()
+        removeGratButton.isHidden = true
+
     }
 
     func getCurrentDate(){
@@ -108,24 +133,15 @@ class ViewController: UIViewController, UITextFieldDelegate {
     }
     
     func performSave(today: Bool){
-        
-//        let grat1:String = (grat1note?.text)!
-//
-//        if (grat1.isEmpty || grat2.isEmpty || grat3.isEmpty)
-//        {
-//            let alert = UIAlertController(title: "Alert", message: "Please fill out all 3", preferredStyle: UIAlertControllerStyle.alert)
-//            alert.addAction(UIAlertAction(title: "Click", style: UIAlertActionStyle.default, handler: nil))
-//            self.present(alert, animated: true, completion: nil)
-//        } else
-//        {
-//            dataManager.createGrat(inNote: grat1, today: today)
-//            dataManager.createGrat(inNote: grat2, today: today)
-//            dataManager.createGrat(inNote: grat3, today: today)
-//            grat1note.text = ""
-//            grat2note.text = ""
-//            grat3note.text = ""
-//            performSegue(withIdentifier: "tableSegue", sender: self)
-//        }
+        for textfieldTag in textfieldTags {
+
+            if let textField = self.view.viewWithTag(textfieldTag) as? UITextField {
+                let textval:String = textField.text!
+                if (!textval.isEmpty) { dataManager.createGrat(inNote: textval, today: today) }
+                textField.removeFromSuperview()
+            }
+        }
+        performSegue(withIdentifier: "tableSegue", sender: self)
     }
     
     @IBAction func buttonViewAll(_ sender: Any) {
@@ -137,7 +153,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
-        textField.backgroundColor = UIColor.lightGray        
+        textField.backgroundColor = UIColor(red: 249.0/255, green: 193.0/255, blue: 93.0/255, alpha: 0.7)
     }
 
 }
