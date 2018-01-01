@@ -62,10 +62,9 @@ class ViewController: UIViewController, UITextFieldDelegate {
 
         let newTextField = UITextField(frame: CGRect(x: 15, y: yPosition, width: gratWidth, height: gratHeight))
         newTextField.placeholder = ""
-        newTextField.target(forAction: #selector(self.textChanged), withSender: UITextField.self)
         newTextField.font = UIFont.systemFont(ofSize: 14)
         newTextField.borderStyle = UITextBorderStyle.roundedRect
-        newTextField.autocorrectionType = UITextAutocorrectionType.no
+        newTextField.autocorrectionType = UITextAutocorrectionType.default
         newTextField.keyboardType = UIKeyboardType.default
         newTextField.returnKeyType = UIReturnKeyType.done
         newTextField.clearButtonMode = UITextFieldViewMode.whileEditing;
@@ -84,12 +83,6 @@ class ViewController: UIViewController, UITextFieldDelegate {
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-    
-    @objc func textChanged(sender:UITextField!)
-    {
-        let textfield:UITextField = sender as UITextField
-        //save textfield.text
-    }
     
     func textFieldShouldReturn(textField: UITextField) -> Bool {
         textField.resignFirstResponder()
