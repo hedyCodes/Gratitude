@@ -127,13 +127,19 @@ class ViewController: UIViewController, UITextFieldDelegate {
     
     func performSave(today: Bool){
         for textfieldTag in textfieldTags {
-
             if let textField = self.view.viewWithTag(textfieldTag) as? UITextField {
                 let textval:String = textField.text!
                 if (!textval.isEmpty) { dataManager.createGrat(inNote: textval, today: today) }
-                textField.removeFromSuperview()
+                //don't remove first text field
+                if textfieldTag == textfieldTags.first {
+                    textField.text = ""
+                    textField.backgroundColor = UIColor.white
+                } else {
+                    textField.removeFromSuperview()
+                }
             }
         }
+        gratCount = 1
         performSegue(withIdentifier: "tableSegue", sender: self)
     }
     
