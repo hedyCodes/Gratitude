@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UIViewController, UITextFieldDelegate {
+class ViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate {
 
     @IBOutlet weak var labelYesterday: UILabel!
     @IBOutlet weak var labelCurrentDate: UILabel!
@@ -30,6 +30,8 @@ class ViewController: UIViewController, UITextFieldDelegate {
     let gratHeight:Int = 60
     let gratWidth:Int = 300
     var gratAreaHeight:CGFloat = 0
+    
+    var maxCharactersInTextField = 200
     
     var textfieldTags:[Int] = []
     
@@ -58,37 +60,43 @@ class ViewController: UIViewController, UITextFieldDelegate {
         //move buttons down with new textfields
         save.frame.origin = CGPoint(x: 270, y: yPositionSaves)
         labelYesterday.frame.origin = CGPoint(x: 15, y: yPositionSaves)
-        saveyesterday.frame.origin = CGPoint(x: 15, y: yPositionSaves + 25)
-
-        let newTextField = UITextField(frame: CGRect(x: 15, y: yPosition, width: gratWidth, height: gratHeight))
-        newTextField.placeholder = ""
-        newTextField.font = UIFont.systemFont(ofSize: 14)
-        newTextField.borderStyle = UITextBorderStyle.roundedRect
-        newTextField.autocorrectionType = UITextAutocorrectionType.default
-        newTextField.keyboardType = UIKeyboardType.default
-        newTextField.returnKeyType = UIReturnKeyType.done
-        newTextField.clearButtonMode = UITextFieldViewMode.whileEditing;
-        newTextField.contentVerticalAlignment = UIControlContentVerticalAlignment.center
-        newTextField.cornerRadius = 10
-        let textTag:Int = Int(arc4random())
-        newTextField.tag = textTag
-        textfieldTags.append(textTag)
-        newTextField.delegate = self
-        self.view.addSubview(newTextField)
+        saveyesterday.frame.origin = CGPoint(x: 15, y: yPositionSaves + 25
+        
+        let newTextView = UITextView(frame: CGRect(x: 15, y: yPosition, width: gratWidth, height: gratHeight))
+        newTextView.backgroundColor = UIColor.white
+        newTextView.font = UIFont.systemFont(ofSize: 14)
+        newTextView.autocorrectionType = UITextAutocorrectionType.default
+        newTextView.keyboardType = UIKeyboardType.default
+        newTextView.returnKeyType = .done
+        newTextView.cornerRadius = 10
+            let textTag:Int = Int(arc4random())
+            newTextView.tag = textTag
+            textfieldTags.append(textTag)
+            newTextView.tag = textTag
+        newTextView.delegate = self
+        self.view.addSubview(newTextView)
+        
+        
         gratCount += 1
     }
     
-    lazy var textField: UITextField! = {
-        let view = UITextField()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        return true
-    }
-    
+//    lazy var textField: UITextField! = {
+//        let view = UITextField()
+//        view.translatesAutoresizingMaskIntoConstraints = false
+//        return view
+//    }()
+//
+//    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+//        textField.resignFirstResponder()
+//        return true
+//    }
+//
+//    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+//        guard let text = textField.text else { return true }
+//        let textLength = String(text).count + string.count - range.length
+//        return textLength <= maxCharactersInTextField
+//    }
+//
     override func viewDidLoad() {
         super.viewDidLoad()
         let backgroundImage = UIImageView(frame: UIScreen.main.bounds)
@@ -127,15 +135,19 @@ class ViewController: UIViewController, UITextFieldDelegate {
     
     func performSave(today: Bool){
         for textfieldTag in textfieldTags {
-            if let textField = self.view.viewWithTag(textfieldTag) as? UITextField {
-                let textval:String = textField.text!
-                if (!textval.isEmpty) { dataManager.createGrat(inNote: textval, today: today) }
-                //don't remove first text field
+            
+            if let textView = self.view.viewWithTag(textfieldTag) as? UITextView {
+                textView.backgroundColor = UIColor.white
+                let textval:String = textView.text!
+                if (!textval.isEmpty) {
+                    dataManager.createGrat(inNote: textval, today: today)
+                }
+                //don't remove first text view
                 if textfieldTag == textfieldTags.first {
-                    textField.text = ""
-                    textField.backgroundColor = UIColor.white
+                    textView.text = ""
+                    //textField.backgroundColor = UIColor.white
                 } else {
-                    textField.removeFromSuperview()
+                    textView.removeFromSuperview()
                 }
             }
         }
@@ -149,10 +161,6 @@ class ViewController: UIViewController, UITextFieldDelegate {
     
     @IBAction func buttonSaveYesterday(_ sender: Any) {
         performSave(today: false)
-    }
-    
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        textField.backgroundColor = UIColor(red: 249.0/255, green: 193.0/255, blue: 93.0/255, alpha: 0.7)
     }
 
 }

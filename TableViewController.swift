@@ -16,6 +16,7 @@ class TableViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     let dataManager = DataManager()
     var gratitudes:[gratitude] = []
+    var tableRowHeight:CGFloat = 70.0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,6 +34,10 @@ class TableViewController: UIViewController, UITableViewDelegate, UITableViewDat
 
         self.back.cornerRadius = 10
         self.tableView.cornerRadius = 10
+    }
+    
+    func calcRowHeight(){
+        //let baseString:NSAttributedString = "Art"
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -57,7 +62,7 @@ class TableViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 70
+        return tableRowHeight
     }
     
     @IBAction func exportButton(_ sender: Any) {
@@ -76,7 +81,7 @@ class TableViewController: UIViewController, UITableViewDelegate, UITableViewDat
         do {
             try csvText.write(to: path!, atomically: true, encoding: String.Encoding.utf8)
             
-            let vc = UIActivityViewController(activityItems: [path], applicationActivities: [])
+            let vc = UIActivityViewController(activityItems: [path], applicationActivities: [])   
             vc.excludedActivityTypes = [
                 UIActivityType.assignToContact,
                 UIActivityType.saveToCameraRoll,
