@@ -15,8 +15,10 @@ class TableViewController: UIViewController, UITableViewDelegate, UITableViewDat
     @IBOutlet weak var back: UIButton!
     
     let dataManager = DataManager()
-    var gratitudes:[gratitude] = []
-    var tableRowHeight:CGFloat = 70.0
+    lazy var gratitudes:[gratitude] = []
+    var tableRowHeight:CGFloat = 80.0
+    let dateFormatter = DateFormatter()
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,6 +32,7 @@ class TableViewController: UIViewController, UITableViewDelegate, UITableViewDat
         tableView.dataSource = self
         
         gratitudes = dataManager.getGratsByMonth(monthSelection: 0)
+        //check for grats older than 3 moths ago and give user option to export existing and delete old ones 
         tableView.reloadData()
 
         self.back.cornerRadius = 10
@@ -52,10 +55,11 @@ class TableViewController: UIViewController, UITableViewDelegate, UITableViewDat
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! gratCellTableViewCell
         let datestamp:Date = gratitudes[indexPath.row].datestamp!
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat  = "EEEE"
+
+        dateFormatter.dateFormat  = "EEEE, MM/dd/YYYY"
         let weekDay = dateFormatter.string(from: datestamp as Date)
-        cell.dateLabel.text = weekDay + ", " +  datestamp.toString(dateFormat: "MM/dd/YY")
+        cell.dateLabel.text = weekDay
+        
         cell.noteLabel.text = gratitudes[indexPath.row].note!
         cell.gratId = Int16(gratitudes[indexPath.row].id!)
         return cell as UITableViewCell

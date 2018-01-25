@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate {
+class ViewController: UIViewController, UITextViewDelegate {
 
     @IBOutlet weak var labelYesterday: UILabel!
     @IBOutlet weak var labelCurrentDate: UILabel!
@@ -31,7 +31,7 @@ class ViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate 
     let gratWidth:Int = 300
     var gratAreaHeight:CGFloat = 0
     
-    var maxCharactersInTextField = 200
+    var maxCharactersInText = 200
     
     var textfieldTags:[Int] = []
     
@@ -60,7 +60,7 @@ class ViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate 
         //move buttons down with new textfields
         save.frame.origin = CGPoint(x: 270, y: yPositionSaves)
         labelYesterday.frame.origin = CGPoint(x: 15, y: yPositionSaves)
-        saveyesterday.frame.origin = CGPoint(x: 15, y: yPositionSaves + 25
+        saveyesterday.frame.origin = CGPoint(x: 15, y: yPositionSaves + 25)
         
         let newTextView = UITextView(frame: CGRect(x: 15, y: yPosition, width: gratWidth, height: gratHeight))
         newTextView.backgroundColor = UIColor.white
@@ -75,28 +75,21 @@ class ViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate 
             newTextView.tag = textTag
         newTextView.delegate = self
         self.view.addSubview(newTextView)
-        
-        
+        newTextView.translatesAutoresizingMaskIntoConstraints = false
         gratCount += 1
     }
     
-//    lazy var textField: UITextField! = {
-//        let view = UITextField()
-//        view.translatesAutoresizingMaskIntoConstraints = false
-//        return view
-//    }()
-//
-//    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-//        textField.resignFirstResponder()
-//        return true
-//    }
-//
-//    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-//        guard let text = textField.text else { return true }
-//        let textLength = String(text).count + string.count - range.length
-//        return textLength <= maxCharactersInTextField
-//    }
-//
+    func textViewShouldReturn(textView: UITextView!) -> Bool {
+        self.view.endEditing(true);
+        return true;
+    }
+    
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        let input = textView.text as NSString
+        let update = input.replacingCharacters(in: range, with: text)
+        return update.count <= maxCharactersInText
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         let backgroundImage = UIImageView(frame: UIScreen.main.bounds)
@@ -138,14 +131,14 @@ class ViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate 
             
             if let textView = self.view.viewWithTag(textfieldTag) as? UITextView {
                 textView.backgroundColor = UIColor.white
-                let textval:String = textView.text!
-                if (!textval.isEmpty) {
-                    dataManager.createGrat(inNote: textval, today: today)
+                if let textval:String = textView.text {
+                    if (!textval.isEmpty) {
+                        dataManager.createGrat(inNote: textval, today: today)
+                    }
                 }
                 //don't remove first text view
                 if textfieldTag == textfieldTags.first {
                     textView.text = ""
-                    //textField.backgroundColor = UIColor.white
                 } else {
                     textView.removeFromSuperview()
                 }

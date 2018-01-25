@@ -82,6 +82,12 @@ class DataManager
    
     }
     
+    func deleteHistory(){
+        
+        let threeMonthsBack = NSCalendar.current.date(byAdding: Calendar.Component.month, value: -3, to: Date())!
+        
+        
+    }
     
     func createTestGratByDate(inDate: Date){
         var maxId = 0
