@@ -33,4 +33,22 @@ extension UIView: Traceable {
     }
 }
     
+extension UIViewController {
+    
+    func alertConfirmation (title:String, message:String, completion:@escaping (_ result:Bool) -> Void) {
+        
+        let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
+        self.present(alert, animated: true, completion: nil)
+        
+        alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { action in
+            completion(true)
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { action in
+            completion(false)
+        }))
+    }
+}
+
+
 

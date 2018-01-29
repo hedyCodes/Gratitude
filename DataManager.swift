@@ -39,21 +39,67 @@ class DataManager
         self.context = self.appDelegate.persistentContainer.viewContext
     }
     
+    //check and see if any grats were created before the date sent in
+    func tooManyGrats(deletedate: Date) -> Bool {
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Grat")
+        let predicate = NSPredicate(format: "datestamp < %@", deletedate as CVarArg)
+        request.predicate = predicate
+        request.fetchLimit = 1
+        request.returnsObjectsAsFaults = false
+        do {
+            let result = try context.fetch(request)
+            if result.count > 0 { return true }
+        } catch {
+        print(error)
+        }
+        return false
+    }
+    
+    
+    func deleteGratsLaterThan(date: Date) -> [gratitude] {
+        var gratArray:[gratitude] = []
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Grat")
+        let predicate = NSPredicate(format: "datestamp < %@", date as CVarArg)
+        request.predicate = predicate
+        
+        let sectionSortDescriptor = NSSortDescriptor(key: "datestamp", ascending: false)
+        let sortDescriptors = [sectionSortDescriptor]
+        request.sortDescriptors = sortDescriptors
+        
+        request.returnsObjectsAsFaults = false
+        do {
+            let result = try context.fetch(request)
+            if result.count > 0 {
+                for data in result as! [NSManagedObject] {
+                    let grat = gratitude()
+                    grat.id = data.value(forKey: "id") as? Int16
+                    grat.datestamp = data.value(forKey: "datestamp") as? Date
+                    grat.note = data.value(forKey: "note") as? String
+                    deleteGrat(inGratId: grat.id!)
+                    gratArray.append(grat)
+                }
+            }
+        } catch {
+            print(error)
+        }
+        return gratArray
+    }
+    
     //add a new grat 
     func createGrat(inNote: String, today: Bool){
-        var maxId = 0
+        let maxId = getMaxId(entity: "Grat")
         var date = Date()
         if !today {
             date = NSCalendar.current.date(byAdding: Calendar.Component.day, value: -1, to: Date())!
         }
-        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Grat")
-        request.returnsObjectsAsFaults = false
-        do {
-            let result = try context.fetch(request)
-            maxId = result.count + 1
-        } catch {
-            print(error)
-        }
+//        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Grat")
+//        request.returnsObjectsAsFaults = false
+//        do {
+//            let result = try context.fetch(request)
+//            maxId = result.count + 1
+//        } catch {
+//            print(error)
+//        }
         
         let newGrat = NSEntityDescription.insertNewObject(forEntityName: "Grat", into: context) as! Grat
         newGrat.setValue(maxId, forKey: "id")
@@ -67,39 +113,8 @@ class DataManager
         }
     }
     
-    
-    func createFakeGrats3Months(){
-
-        createTestGratByDate(inDate: Date())
-        
-        let date = Date()
-        let lastMonth = NSCalendar.current.date(byAdding: Calendar.Component.month, value: -1, to: date)!
-        createTestGratByDate(inDate: lastMonth)
-        
-        let threeMonthsDate = Date()
-        let threeMonthsBack = NSCalendar.current.date(byAdding: Calendar.Component.month, value: -3, to: threeMonthsDate)!
-        createTestGratByDate(inDate: threeMonthsBack)
-   
-    }
-    
-    func deleteHistory(){
-        
-        let threeMonthsBack = NSCalendar.current.date(byAdding: Calendar.Component.month, value: -3, to: Date())!
-        
-        
-    }
-    
     func createTestGratByDate(inDate: Date){
-        var maxId = 0
-        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Grat")
-        request.returnsObjectsAsFaults = false
-        do {
-            let result = try context.fetch(request)
-            maxId = result.count + 1
-        } catch {
-            print(error)
-        }
-        
+        let maxId = getMaxId(entity: "Grat")
         let newGrat = NSEntityDescription.insertNewObject(forEntityName: "Grat", into: context) as! Grat
         newGrat.setValue(maxId, forKey: "id")
         newGrat.setValue("test", forKey: "note")
@@ -240,6 +255,25 @@ class DataManager
             print(error)
         }
         return gratArray
+    }
+    
+    func getMaxId(entity: String) -> Int16 {
+        var id:Int16 = 0
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
+        let sort = NSSortDescriptor(key: "id", ascending: false)
+        request.sortDescriptors = [sort]
+        request.fetchLimit = 1
+        do {
+            let result = try context.fetch(request)
+            if result.count > 0 {
+                let grat = result.first as! NSManagedObject
+                id = (grat.value(forKey: "id") as? Int16)!
+            }
+            
+        } catch {
+            print(error)
+        }
+        return id
     }
     
 }

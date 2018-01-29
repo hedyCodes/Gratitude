@@ -101,6 +101,9 @@ class ViewController: UIViewController, UITextViewDelegate {
         self.saveyesterday.cornerRadius = 10
         self.labelYesterday.cornerRadius = 10
         getCurrentDate()
+        
+        //POPUP TO TELL USER ABOUT DATA RESTRICTION AND REMOVE TOP PANEL TO SELECT MONTHS
+        
         saveButtonHeight = save.bounds.height
         yestButtonHeight = saveyesterday.bounds.height
         yestLabelHeight = labelYesterday.bounds.height
