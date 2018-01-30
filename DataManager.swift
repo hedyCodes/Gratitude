@@ -92,14 +92,6 @@ class DataManager
         if !today {
             date = NSCalendar.current.date(byAdding: Calendar.Component.day, value: -1, to: Date())!
         }
-//        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Grat")
-//        request.returnsObjectsAsFaults = false
-//        do {
-//            let result = try context.fetch(request)
-//            maxId = result.count + 1
-//        } catch {
-//            print(error)
-//        }
         
         let newGrat = NSEntityDescription.insertNewObject(forEntityName: "Grat", into: context) as! Grat
         newGrat.setValue(maxId, forKey: "id")
@@ -267,7 +259,7 @@ class DataManager
             let result = try context.fetch(request)
             if result.count > 0 {
                 let grat = result.first as! NSManagedObject
-                id = (grat.value(forKey: "id") as? Int16)!
+                id = (grat.value(forKey: "id") as? Int16)! + 1
             }
             
         } catch {
